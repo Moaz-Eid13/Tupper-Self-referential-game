@@ -32,7 +32,7 @@ def _unpack_header(bits):
     for bit in bits:
         value = value << 1 | int(bit)
         
-    version = value >> 20
+    version = value >> 28
     if version != VERSION:
         raise CodecError("unsupported stream version %d" % version)
     
@@ -51,7 +51,7 @@ def encode(pixels, depth):
     
     stream = np.concatenate([[1], _pack_header(width, height, depth), body])
     
-    padding = -len(stream) % 0
+    padding = -len(stream) % 8
     packed = np.packbits(np.concatenate([stream, np.zeros(padding, np.uint8)]))
     return int.from_bytes(packed.tobytes(), "big") >> padding
 
@@ -60,7 +60,7 @@ def decode (k):
     if not isinstance(k, int) or k <= 0:
         raise CodecError("k must be a positive integer")
     
-    length = k.bit_length
+    length = k.bit_length()
     if length <= PREFIX_BITS:
         raise CodecError("stream is too short to hold a header")
     
