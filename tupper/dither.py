@@ -24,3 +24,7 @@ def quantize(grey, levels):
     
     scaled = grey.astype(np.float64) / 255.0 * (levels - 1)
     return np.clip(np.floor(scaled + tile), 0, levels - 1).astype(np.uint8)
+
+def expand(indices, levels):
+    """Spread shade indices back across the entire range."""
+    return np.rint(indices.astype(np.float64) / (levels - 1) * 255).astype(np.uint8)
